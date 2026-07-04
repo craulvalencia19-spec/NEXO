@@ -318,6 +318,9 @@ chipGroups.forEach(group => {
 
 // ================= REGISTRO DE IDEAS (Cotizar) =================
 const LEADS_KEY = 'nexo_leads';
+// Contador COMPARTIDO entre todos los usuarios (mismo número para cualquiera que entre)
+const COUNTER_NAMESPACE = 'nexo-web-studio-bea-2026';
+const COUNTER_KEY = 'registros-ideas';
 
 function getLeads(){
   try {
@@ -329,11 +332,38 @@ function getLeads(){
 function saveLeads(leads){
   localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
 }
-function refreshLeadCount(){
+
+// Trae el número actual del contador compartido (sin sumar)
+async function fetchSharedCount(){
   const el = document.getElementById('leadCount');
-  if (el) el.textContent = getLeads().length;
+  const elGlobal = document.getElementById('anfitrionGlobalCount');
+  try {
+    const res = await fetch(`https://api.countapi.xyz/get/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
+    const data = await res.json();
+    if (el) el.textContent = data.value ?? 0;
+    if (elGlobal) elGlobal.textContent = data.value ?? 0;
+  } catch (err) {
+    // Si no hay internet en ese momento, mostramos el respaldo local
+    if (el) el.textContent = getLeads().length;
+    if (elGlobal) elGlobal.textContent = getLeads().length;
+  }
 }
-refreshLeadCount();
+
+// Suma 1 al contador compartido (se llama cuando alguien se registra)
+async function bumpSharedCount(){
+  const el = document.getElementById('leadCount');
+  const elGlobal = document.getElementById('anfitrionGlobalCount');
+  try {
+    const res = await fetch(`https://api.countapi.xyz/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
+    const data = await res.json();
+    if (el) el.textContent = data.value ?? 0;
+    if (elGlobal) elGlobal.textContent = data.value ?? 0;
+  } catch (err) {
+    fetchSharedCount();
+  }
+}
+
+fetchSharedCount(); // se actualiza cada vez que alguien entra a la página
 
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
@@ -357,8 +387,8 @@ contactForm.addEventListener('submit', (e) => {
 
   formStatus.textContent = '✅ Guardado correctamente en la lista';
   contactForm.reset();
-  refreshLeadCount();
-  renderAnfitrionList(); // por si el panel ya está abierto
+  bumpSharedCount();          // suma al contador visible para todos
+  renderAnfitrionList();      // por si el panel ya está abierto (lista local del anfitrión)
 
   setTimeout(() => { formStatus.textContent = ''; }, 4000);
 });
@@ -376,6 +406,7 @@ const anfitrionTotal = document.getElementById('anfitrionTotal');
 function renderAnfitrionList(){
   const leads = getLeads();
   anfitrionTotal.textContent = leads.length;
+  fetchSharedCount(); // refresca también el número compartido de "Cotizar" al abrir el panel
   anfitrionList.innerHTML = '';
 
   leads.forEach((lead, index) => {
