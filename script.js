@@ -316,69 +316,38 @@ chipGroups.forEach(group => {
   });
 });
 
-// ================= REGISTRO DE IDEAS (Cotizar) =================
-const LEADS_KEY = 'nexo_leads';
-// Contador COMPARTIDO entre todos los usuarios (mismo número para cualquiera que entre)
-// Abacus soporta CORS oficialmente, por eso funciona bien desde cualquier navegador
-const COUNTER_BASE = 'https://abacus.jasoncameron.dev';
-const COUNTER_NAMESPACE = 'nexo-web-studio-unicen-bea';
-const COUNTER_KEY = 'registros-ideas-2026';
+// ================= REGISTRO DE IDEAS (Cotizar) — con Firebase real =================
+// sharedLeads siempre tiene la lista COMPLETA y actualizada en vivo,
+// igual para cualquier persona en cualquier dispositivo del mundo.
+let sharedLeads = [];
 
-function getLeads(){
-  try {
-    return JSON.parse(localStorage.getItem(LEADS_KEY)) || [];
-  } catch (err) {
-    return [];
+function startFirebaseListener(){
+  if (typeof window.firebaseListenLeads !== 'function') {
+    // Firebase todavía no cargó (conexión lenta); reintenta en un momento
+    setTimeout(startFirebaseListener, 300);
+    return;
   }
+  window.firebaseListenLeads((leads) => {
+    sharedLeads = leads;
+    updateLeadCountDisplay();
+    if (anfitrionPanel && anfitrionPanel.classList.contains('visible')) {
+      renderAnfitrionList();
+    }
+  });
 }
-function saveLeads(leads){
-  localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
-}
+startFirebaseListener();
 
-// Trae el número actual del contador compartido (sin sumar)
-async function fetchSharedCount(){
+function updateLeadCountDisplay(){
   const el = document.getElementById('leadCount');
   const elGlobal = document.getElementById('anfitrionGlobalCount');
-  try {
-    const res = await fetch(`${COUNTER_BASE}/get/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
-    const data = await res.json();
-    const value = (data && data.value !== undefined) ? data.value : 0;
-    if (el) el.textContent = value;
-    if (elGlobal) elGlobal.textContent = value;
-  } catch (err) {
-    // Si no hay internet en ese momento, mostramos el respaldo local
-    if (el) el.textContent = getLeads().length;
-    if (elGlobal) elGlobal.textContent = getLeads().length;
-  }
-}
-
-// Suma 1 al contador compartido (se llama cuando alguien se registra)
-async function bumpSharedCount(){
-  const el = document.getElementById('leadCount');
-  const elGlobal = document.getElementById('anfitrionGlobalCount');
-  try {
-    const res = await fetch(`${COUNTER_BASE}/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
-    const data = await res.json();
-    const value = (data && data.value !== undefined) ? data.value : 0;
-    if (el) el.textContent = value;
-    if (elGlobal) elGlobal.textContent = value;
-  } catch (err) {
-    fetchSharedCount();
-  }
-}
-
-fetchSharedCount(); // se actualiza cada vez que alguien entra a la página
-setInterval(fetchSharedCount, 10000); // y se refresca solo cada 10s mientras la página está abierta
-
-const refreshCountBtn = document.getElementById('refreshCountBtn');
-if (refreshCountBtn) {
-  refreshCountBtn.addEventListener('click', () => fetchSharedCount());
+  if (el) el.textContent = sharedLeads.length;
+  if (elGlobal) elGlobal.textContent = sharedLeads.length;
 }
 
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const nombre = document.getElementById('leadNombre').value.trim();
@@ -391,19 +360,23 @@ contactForm.addEventListener('submit', (e) => {
     return;
   }
 
-  const leads = getLeads();
-  leads.push({ nombre, correo, numero, idea, visto: false, fecha: new Date().toISOString() });
-  saveLeads(leads);
+  if (typeof window.firebaseAddLead !== 'function') {
+    formStatus.textContent = 'Conectando… espera un segundo e intentalo de nuevo.';
+    return;
+  }
 
-  formStatus.textContent = '✅ Guardado correctamente en la lista';
-  contactForm.reset();
-  bumpSharedCount();          // suma al contador visible para todos
-  renderAnfitrionList();      // por si el panel ya está abierto (lista local del anfitrión)
+  try {
+    await window.firebaseAddLead({ nombre, correo, numero, idea, visto: false, mostrando: false });
+    formStatus.textContent = '✅ Guardado correctamente en la lista';
+    contactForm.reset();
+  } catch (err) {
+    formStatus.textContent = 'No se pudo guardar. Revisa tu conexion e intenta de nuevo.';
+  }
 
   setTimeout(() => { formStatus.textContent = ''; }, 4000);
 });
 
-// ================= PANEL DEL ANFITRIÓN =================
+// ================= PANEL DEL ANFITRION =================
 const HOST_PASSWORD = 'MUNDO DIGITAL';
 const anfitrionClave = document.getElementById('anfitrionClave');
 const anfitrionEntrar = document.getElementById('anfitrionEntrar');
@@ -414,10 +387,14 @@ const anfitrionList = document.getElementById('anfitrionList');
 const anfitrionTotal = document.getElementById('anfitrionTotal');
 
 function renderAnfitrionList(){
-  const leads = getLeads();
+  const leads = sharedLeads;
   anfitrionTotal.textContent = leads.length;
-  fetchSharedCount(); // refresca también el número compartido de "Cotizar" al abrir el panel
   anfitrionList.innerHTML = '';
+
+  if (leads.length === 0) {
+    anfitrionList.innerHTML = '<p style="color:var(--text-dim); text-align:center;">No se realizaron registros hasta el momento.</p>';
+    return;
+  }
 
   leads.forEach((lead, index) => {
     const card = document.createElement('div');
@@ -433,14 +410,14 @@ function renderAnfitrionList(){
       </div>
       <div class="lead-actions">
         <span class="lead-tag ${lead.visto ? '' : 'pendiente'}">${lead.visto ? 'Visto' : 'Pendiente'}</span>
-        <button class="lead-toggle-btn" data-index="${index}">
+        <button class="lead-toggle-btn" data-id="${lead.id}">
           ${lead.visto ? (lead.mostrando ? 'Ocultar idea' : 'Volver a ver') : 'Marcar visto'}
         </button>
-        <button class="lead-contact-btn" data-contact-index="${index}">Contactar</button>
-        <div class="lead-confirm" id="confirm-${index}" style="display:none;">
+        <button class="lead-contact-btn" data-contact-id="${lead.id}">Contactar</button>
+        <div class="lead-confirm" id="confirm-${lead.id}" style="display:none;">
           <span>Contactar a "${lead.nombre}; ${lead.numero}"</span>
-          <button class="lead-confirm-yes" data-yes-index="${index}">Sí</button>
-          <button class="lead-confirm-no" data-no-index="${index}">No</button>
+          <button class="lead-confirm-yes" data-yes-id="${lead.id}">Si</button>
+          <button class="lead-confirm-no" data-no-id="${lead.id}">No</button>
         </div>
       </div>
     `;
@@ -449,42 +426,41 @@ function renderAnfitrionList(){
 
   anfitrionList.querySelectorAll('.lead-contact-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const i = btn.dataset.contactIndex;
-      const confirmBox = document.getElementById(`confirm-${i}`);
+      const id = btn.dataset.contactId;
+      const confirmBox = document.getElementById(`confirm-${id}`);
       confirmBox.style.display = confirmBox.style.display === 'none' ? 'flex' : 'none';
     });
   });
 
   anfitrionList.querySelectorAll('.lead-confirm-yes').forEach(btn => {
     btn.addEventListener('click', () => {
-      const leads = getLeads();
-      const lead = leads[Number(btn.dataset.yesIndex)];
+      const id = btn.dataset.yesId;
+      const lead = sharedLeads.find(l => l.id === id);
+      if (!lead) return;
       const digits = lead.numero.replace(/\D/g, '');
       const mensaje = encodeURIComponent(`Hola ${lead.nombre}, somos NEXO Web Studio. Vimos tu idea de proyecto y queremos conversar contigo.`);
       window.open(`https://wa.me/${digits}?text=${mensaje}`, '_blank');
-      document.getElementById(`confirm-${btn.dataset.yesIndex}`).style.display = 'none';
+      document.getElementById(`confirm-${id}`).style.display = 'none';
     });
   });
 
   anfitrionList.querySelectorAll('.lead-confirm-no').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.getElementById(`confirm-${btn.dataset.noIndex}`).style.display = 'none';
+      document.getElementById(`confirm-${btn.dataset.noId}`).style.display = 'none';
     });
   });
 
   anfitrionList.querySelectorAll('.lead-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const leads = getLeads();
-      const i = Number(btn.dataset.index);
-      const lead = leads[i];
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const lead = sharedLeads.find(l => l.id === id);
+      if (!lead || typeof window.firebaseUpdateLead !== 'function') return;
       if (!lead.visto) {
-        lead.visto = true;
-        lead.mostrando = false;
+        await window.firebaseUpdateLead(id, { visto: true, mostrando: false });
       } else {
-        lead.mostrando = !lead.mostrando;
+        await window.firebaseUpdateLead(id, { mostrando: !lead.mostrando });
       }
-      saveLeads(leads);
-      renderAnfitrionList();
+      // La lista se refresca sola gracias al listener en tiempo real
     });
   });
 }
