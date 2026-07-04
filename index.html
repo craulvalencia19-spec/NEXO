@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXO Web Studio | Diseño web que conecta</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== PANTALLA DE BIENVENIDA / INGRESO ===== -->
+<div class="splash" id="splash">
+  <canvas id="splashRain"></canvas>
+  <div class="splash-content">
+    <h1 class="splash-logo" id="splashLogo">NEXO</h1>
+    <p class="splash-tag">Web Studio</p>
+    <button class="btn btn-primary splash-enter" id="enterBtn">Ingreso</button>
+  </div>
+</div>
+
+<!-- Fondo de lluvia de neón (canvas) -->
+<canvas id="neonRain"></canvas>
+
+<!-- Overlay de transición "suspenso" entre secciones -->
+<div class="transition-overlay" id="transitionOverlay">
+  <span class="transition-text" id="transitionText">Cargando</span>
+</div>
+
+<!-- ===== NAV ===== -->
+<div id="siteContent">
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="logo">NEX<span>O</span></a>
+    <nav class="nav-links">
+      <a href="#servicios" class="nav-transition">Servicios</a>
+      <a href="#proceso" class="nav-transition">Proceso</a>
+      <a href="#portafolio" class="nav-transition">Portafolio</a>
+      <a href="#testimonios" class="nav-transition">Testimonios</a>
+      <a href="#contacto" class="nav-cta nav-transition">Cotizar</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Menú"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero" id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <p class="hero-tag scramble" data-reveal>💡 Estudio Web para marcas jóvenes</p>
+    <h1 data-reveal>
+      Convertimos ideas en experiencias digitales imposibles de ignorar
+    </h1>
+    <p class="hero-sub" data-reveal>
+      Diseño, código y estrategia en un solo lugar. Sitios rápidos, modernos
+      y hechos para que tu público joven se quede — no que se vaya.
+    </p>
+    <div class="hero-actions" data-reveal>
+      <a href="#contacto" class="btn btn-primary" id="ctaBtn">Solicitar cotización</a>
+      <a href="#proceso" class="btn btn-ghost">Ver cómo trabajamos ↓</a>
+    </div>
+    <div class="hero-stats" data-reveal>
+      <div><strong id="statProjects">0</strong><span>Proyectos</span></div>
+      <div><strong id="statSpeed">0</strong><span>% más rápido</span></div>
+      <div><strong id="statUptime">0</strong><span>% uptime</span></div>
+    </div>
+  </div>
+  <div class="scroll-indicator"><span></span></div>
+</section>
+
+<!-- ===== SERVICIOS ===== -->
+<section class="servicios" id="servicios">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Qué hacemos</span>
+    <h2>Todo lo que tu marca necesita para existir online</h2>
+  </div>
+  <div class="cards-grid">
+    <article class="card" data-reveal>
+      <div class="card-icon">🎨</div>
+      <h3>Diseño UI/UX</h3>
+      <p>Interfaces pensadas para cómo piensa (y scrollea) tu usuario real, no para lo que se ve bonito en un mockup.</p>
+    </article>
+    <article class="card" data-reveal>
+      <div class="card-icon">⚡</div>
+      <h3>Desarrollo Web</h3>
+      <p>Sitios rápidos, responsivos y sin relleno técnico. Código limpio que carga antes de que dudes en quedarte.</p>
+    </article>
+    <article class="card" data-reveal>
+      <div class="card-icon">🚀</div>
+      <h3>Branding Digital</h3>
+      <p>Identidad visual coherente en cada pantalla: colores, tono y personalidad que se recuerdan.</p>
+    </article>
+    <article class="card" data-reveal>
+      <div class="card-icon">📈</div>
+      <h3>Growth & SEO</h3>
+      <p>Que te encuentren. Optimizamos cada sitio para buscadores y para que la gente se quede navegando.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===== PROCESO CREATIVO (didáctico) ===== -->
+<section class="proceso" id="proceso">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Cómo trabajamos</span>
+    <h2>De la idea al sitio en 4 pasos claros</h2>
+    <p class="section-sub">Toca cada paso para ver de qué se trata. Así de simple es trabajar con nosotros.</p>
+  </div>
+
+  <div class="steps-track" data-reveal>
+    <button class="step-btn active" data-step="1">
+      <span class="step-num">01</span><span>Descubrimiento</span>
+    </button>
+    <button class="step-btn" data-step="2">
+      <span class="step-num">02</span><span>Diseño</span>
+    </button>
+    <button class="step-btn" data-step="3">
+      <span class="step-num">03</span><span>Desarrollo</span>
+    </button>
+    <button class="step-btn" data-step="4">
+      <span class="step-num">04</span><span>Lanzamiento</span>
+    </button>
+  </div>
+
+  <div class="step-panel" data-reveal>
+    <div class="step-content active" data-panel="1">
+      <span class="step-big">01</span>
+      <div>
+        <h3>Descubrimiento</h3>
+        <p>Escuchamos tu idea, tu público y tu objetivo real. Nada de plantillas genéricas: entendemos tu marca antes de tocar una línea de código.</p>
+        <ul><li>Reunión inicial</li><li>Análisis de referencia</li><li>Definición de objetivos</li></ul>
+      </div>
+    </div>
+    <div class="step-content" data-panel="2">
+      <span class="step-big">02</span>
+      <div>
+        <h3>Diseño</h3>
+        <p>Creamos la identidad visual y la estructura de tu sitio. Prototipos que puedes ver y sentir antes de que exista una sola línea de código.</p>
+        <ul><li>Wireframes</li><li>Paleta y tipografía</li><li>Prototipo interactivo</li></ul>
+      </div>
+    </div>
+    <div class="step-content" data-panel="3">
+      <span class="step-big">03</span>
+      <div>
+        <h3>Desarrollo</h3>
+        <p>Convertimos el diseño en un sitio real: rápido, responsivo y con animaciones que se sienten premium en cualquier dispositivo.</p>
+        <ul><li>Código limpio</li><li>Animaciones e interacción</li><li>Pruebas cruzadas</li></ul>
+      </div>
+    </div>
+    <div class="step-content" data-panel="4">
+      <span class="step-big">04</span>
+      <div>
+        <h3>Lanzamiento</h3>
+        <p>Publicamos, medimos y ajustamos. Tu sitio sale al mundo con seguimiento real de cómo lo usa la gente.</p>
+        <ul><li>Publicación</li><li>Analítica activa</li><li>Soporte post-lanzamiento</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CALCULADORA DE PRESUPUESTO (elemento didáctico extra) ===== -->
+<section class="calculadora" id="calculadora">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Herramienta</span>
+    <h2>Calculadora rápida de presupuesto</h2>
+    <p class="section-sub">Une el estilo, secciones y funciones que quieres. Es solo una referencia estimada.</p>
+  </div>
+
+  <div class="calc-box" data-reveal>
+    <div class="calc-group">
+      <label>Tipo de sitio</label>
+      <div class="chip-group" data-group="tipo">
+        <button class="chip active" data-value="150">Landing page</button>
+        <button class="chip" data-value="350">Sitio corporativo</button>
+        <button class="chip" data-value="600">Tienda online</button>
+      </div>
+    </div>
+    <div class="calc-group">
+      <label>Secciones extra</label>
+      <div class="chip-group" data-group="secciones">
+        <button class="chip" data-value="40">Blog</button>
+        <button class="chip" data-value="60">Portafolio</button>
+        <button class="chip" data-value="80">Reservas / Formularios</button>
+      </div>
+    </div>
+    <div class="calc-group">
+      <label>Nivel de animación</label>
+      <div class="chip-group" data-group="animacion">
+        <button class="chip active" data-value="0">Básico</button>
+        <button class="chip" data-value="70">Avanzado</button>
+        <button class="chip" data-value="150">Premium (GSAP)</button>
+      </div>
+    </div>
+    <div class="calc-result">
+      <span>Estimado</span>
+      <strong><span id="calcTotal">150</span> USD</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PORTAFOLIO ===== -->
+<section class="portafolio" id="portafolio">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Trabajos</span>
+    <h2>Proyectos que ya están rompiendo esquemas</h2>
+  </div>
+  <div class="portfolio-grid">
+    <div class="portfolio-item" data-reveal>
+      <img src="chemlab-1.png" alt="ChemLab Virtual — Tabla periódica interactiva">
+      <div class="portfolio-overlay"><h4>ChemLab Virtual</h4><span>Laboratorio químico interactivo</span></div>
+    </div>
+    <div class="portfolio-item" data-reveal>
+      <img src="chemlab-2.png" alt="ChemLab Virtual — Simulador de reacciones">
+      <div class="portfolio-overlay"><h4>ChemLab Virtual</h4><span>Simulador de reacciones</span></div>
+    </div>
+    <div class="portfolio-item" data-reveal>
+      <img src="casa-1.png" alt="Casa Inteligente ESP32 — Conexión Wi-Fi y control de relés">
+      <div class="portfolio-overlay"><h4>Casa Inteligente ESP32</h4><span>App de control IoT</span></div>
+    </div>
+    <div class="portfolio-item" data-reveal>
+      <img src="casa-2.png" alt="Casa Inteligente ESP32 — Panel de sistema">
+      <div class="portfolio-overlay"><h4>Casa Inteligente ESP32</h4><span>Panel de sistema en tiempo real</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIOS ===== -->
+<section class="testimonios" id="testimonios">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Lo dicen ellos</span>
+    <h2>Marcas que ya confiaron en NEXO</h2>
+  </div>
+  <div class="testi-track" data-reveal>
+    <blockquote class="testi-card">
+      <p>"Entendieron a nuestro público mejor que nosotros mismos. El sitio se siente vivo."</p>
+      <cite>— Camila R., Studio Kōra</cite>
+    </blockquote>
+    <blockquote class="testi-card">
+      <p>"Rápido, moderno y sin dolores de cabeza técnicos. Justo lo que necesitábamos."</p>
+      <cite>— Diego M., Nómada Coffee</cite>
+    </blockquote>
+    <blockquote class="testi-card">
+      <p>"El proceso fue clarísimo desde el día uno. Sabíamos qué esperar en cada etapa."</p>
+      <cite>— Vale T., Volt Sneakers</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ===== CONTACTO ===== -->
+<section class="contacto" id="contacto">
+  <div class="contacto-box" data-reveal>
+    <div class="contacto-text">
+      <span class="eyebrow">Empecemos</span>
+      <h2>¿Listo para que tu marca se vea como debería?</h2>
+      <p>Cuéntanos tu idea. Se guarda al instante, sin que nada falle.</p>
+      <p class="contacto-count">👥 <strong id="leadCount">0</strong> personas ya registraron su idea</p>
+    </div>
+    <form class="contacto-form" id="contactForm">
+      <input type="text" id="leadNombre" placeholder="Tu nombre" required>
+      <input type="email" id="leadCorreo" placeholder="Tu correo" required>
+      <input type="tel" id="leadNumero" placeholder="Ingrese su número" required>
+      <textarea id="leadIdea" placeholder="Cuéntanos tu idea de proyecto" rows="4" required></textarea>
+      <button type="submit" class="btn btn-primary">Guardar cambios</button>
+      <p class="form-status" id="formStatus"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ===== PANEL DEL ANFITRIÓN (oculto, protegido por clave) ===== -->
+<section class="anfitrion" id="anfitrion">
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">Solo anfitrión</span>
+    <h2>Panel de ideas registradas</h2>
+    <p class="section-sub">Ingresa la clave para ver la lista de usuarios y comunicarte con ellos.</p>
+  </div>
+
+  <div class="anfitrion-lock" id="anfitrionLock" data-reveal>
+    <input type="password" id="anfitrionClave" placeholder="Clave de acceso">
+    <button class="btn btn-primary" id="anfitrionEntrar">Ver ideas guardadas</button>
+    <p class="form-status" id="anfitrionStatus"></p>
+  </div>
+
+  <div class="anfitrion-panel" id="anfitrionPanel" data-reveal>
+    <p class="anfitrion-total">Registro de usuario — <strong id="anfitrionTotal">0</strong> en total</p>
+    <div class="anfitrion-list" id="anfitrionList"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <p>© 2026 NEXO Web Studio — Diseño y desarrollo para marcas que no se conforman.</p>
+</footer>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
