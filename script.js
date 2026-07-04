@@ -319,8 +319,9 @@ chipGroups.forEach(group => {
 // ================= REGISTRO DE IDEAS (Cotizar) =================
 const LEADS_KEY = 'nexo_leads';
 // Contador COMPARTIDO entre todos los usuarios (mismo número para cualquiera que entre)
-const COUNTER_NAMESPACE = 'nexo-web-studio-bea-2026';
-const COUNTER_KEY = 'registros-ideas';
+// Usamos una clave única y larga para que nadie más la use por accidente
+const COUNTER_BASE = 'https://countapi.mileshilliard.com/api/v1';
+const COUNTER_KEY = 'nexo_web_studio_bea_domingo_savio_registros_2026';
 
 function getLeads(){
   try {
@@ -338,10 +339,11 @@ async function fetchSharedCount(){
   const el = document.getElementById('leadCount');
   const elGlobal = document.getElementById('anfitrionGlobalCount');
   try {
-    const res = await fetch(`https://api.countapi.xyz/get/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
+    const res = await fetch(`${COUNTER_BASE}/get/${COUNTER_KEY}`);
     const data = await res.json();
-    if (el) el.textContent = data.value ?? 0;
-    if (elGlobal) elGlobal.textContent = data.value ?? 0;
+    const value = (data && data.value !== undefined) ? data.value : 0;
+    if (el) el.textContent = value;
+    if (elGlobal) elGlobal.textContent = value;
   } catch (err) {
     // Si no hay internet en ese momento, mostramos el respaldo local
     if (el) el.textContent = getLeads().length;
@@ -354,16 +356,18 @@ async function bumpSharedCount(){
   const el = document.getElementById('leadCount');
   const elGlobal = document.getElementById('anfitrionGlobalCount');
   try {
-    const res = await fetch(`https://api.countapi.xyz/hit/${COUNTER_NAMESPACE}/${COUNTER_KEY}`);
+    const res = await fetch(`${COUNTER_BASE}/hit/${COUNTER_KEY}`);
     const data = await res.json();
-    if (el) el.textContent = data.value ?? 0;
-    if (elGlobal) elGlobal.textContent = data.value ?? 0;
+    const value = (data && data.value !== undefined) ? data.value : 0;
+    if (el) el.textContent = value;
+    if (elGlobal) elGlobal.textContent = value;
   } catch (err) {
     fetchSharedCount();
   }
 }
 
 fetchSharedCount(); // se actualiza cada vez que alguien entra a la página
+setInterval(fetchSharedCount, 15000); // y se refresca solo cada 15s mientras la página está abierta
 
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
